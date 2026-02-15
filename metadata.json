@@ -1,0 +1,5 @@
+{
+  "name": "Robotics Course Review Assistant",
+  "description": "A comprehensive review tool for the Robotics course, consolidating meeting minutes and transcript highlights into a structured, interactive format for exam preparation.",
+  "requestFramePermissions": []
+}
