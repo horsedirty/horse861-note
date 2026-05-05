@@ -1,0 +1,1243 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920">
+<title data-i18n="title">ProSpectNet — Efficient Traffic Forecasting</title>
+<style>
+/* ── BMW · Apple Fusion Design System ── */
+:root {
+  --bg:        #ffffff;
+  --bg-dark:   #1a1a1a;
+  --fg:        #1d1d1f;
+  --fg-dark:   #f5f5f7;
+  --muted:     #515154;
+  --muted-dark:#a1a1a6;
+  --border:    #d2d2d7;
+  --border-dark:#3a3a3c;
+  --accent:    #1c69d4;
+  --accent-focus: #0653b6;
+  --accent-dim: rgba(28,105,212,0.12);
+  --accent-gold: #d4a843;
+  --table-stripe: #f5f5f7;
+  --table-stripe-dark: #222224;
+
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif;
+  --font-body:    -apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  --section-gap: 160px;
+  --content-max: 1200px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  background: var(--bg);
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--fg);
+  background: var(--bg);
+  overflow-x: hidden;
+}
+
+/* ── Typography ── */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+}
+.h--hero {
+  font-size: clamp(64px, 10vw, 120px);
+  font-weight: 700;
+  letter-spacing: -0.032em;
+  text-transform: uppercase;
+}
+.h--section {
+  font-size: clamp(40px, 6.5vw, 72px);
+  font-weight: 600;
+  letter-spacing: -0.028em;
+}
+.h--sub {
+  font-size: 32px;
+  font-weight: 500;
+  letter-spacing: -0.018em;
+}
+.h--card {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+}
+.p--lead {
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--muted);
+}
+.p--body {
+  font-size: 17px;
+  line-height: 1.3;
+}
+.p--caption {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover { color: var(--accent-focus); }
+
+/* ── Sections ── */
+section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 0;
+  position: relative;
+  overflow: hidden;
+}
+section.dark {
+  background: var(--bg-dark);
+  color: var(--fg-dark);
+}
+section.dark .p--lead { color: var(--muted-dark); }
+section.dark .p--caption { color: var(--muted-dark); }
+
+.container {
+  width: 100%;
+  max-width: var(--content-max);
+  padding: 0 60px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.grid-2-3-1 {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+}
+
+/* ── Hero ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-dark);
+  color: var(--fg-dark);
+  overflow: hidden;
+}
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero__bg-pattern {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% 40%, rgba(28,105,212,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 30% 80%, rgba(28,105,212,0.08) 0%, transparent 60%);
+}
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+.hero__content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 1100px;
+  padding: 0 60px;
+}
+.hero__kicker {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 32px;
+}
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(72px, 11vw, 140px);
+  font-weight: 700;
+  letter-spacing: -0.038em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.hero__subtitle {
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--muted-dark);
+  line-height: 1.35;
+  max-width: 720px;
+  margin: 0 auto 48px;
+}
+.hero__meta {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--muted-dark);
+  letter-spacing: 0.04em;
+  margin-bottom: 40px;
+}
+.hero__venue {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--accent-gold);
+  line-height: 1.45;
+  max-width: 800px;
+  margin: 0 auto 24px;
+}
+.hero__venue .accent-diamond {
+  display: inline-block;
+  font-size: 9px;
+  vertical-align: middle;
+  margin-right: 8px;
+  color: currentColor;
+}
+.hero__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.hero__gh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--fg-dark);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 10px 22px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+.hero__gh-btn:hover {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.4);
+  color: var(--accent);
+}
+.hero__gh-btn svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+.hero__scroll-hint {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.hero__scroll-hint span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted-dark);
+}
+.hero__scroll-line {
+  width: 1px;
+  height: 40px;
+  background: var(--border-dark);
+  animation: scrollHint 2s ease-in-out infinite;
+}
+@keyframes scrollHint {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.6); }
+}
+
+/* ── Sticky accent bar ── */
+.accent-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 3px;
+  background: var(--accent);
+  transform-origin: left;
+  width: 0%;
+  transition: width 0.15s linear;
+}
+
+/* ── Problem / Stats ── */
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border-top: 1px solid var(--border);
+  margin-top: 80px;
+}
+.stat-item {
+  padding: 40px 0;
+  border-right: 1px solid var(--border);
+}
+.stat-item:last-child { border-right: none; }
+.stat-item .mono {
+  font-size: clamp(48px, 8vw, 80px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  display: block;
+  color: var(--fg);
+}
+section.dark .stat-item .mono { color: var(--fg-dark); }
+.stat-item .stat-label {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 12px;
+}
+section.dark .stat-item .stat-label { color: var(--muted-dark); }
+.stat-item .stat-label .hi {
+  color: var(--accent);
+}
+
+/* ── Cards ── */
+.card {
+  padding: 48px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+section.dark .card {
+  background: #222224;
+  border-color: var(--border-dark);
+}
+.card__kicker {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.card__title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.card__body {
+  font-size: 17px;
+  line-height: 1.3;
+  color: var(--muted);
+}
+section.dark .card__body { color: var(--muted-dark); }
+
+/* ── Table ── */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+thead th {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: right;
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--fg);
+  color: var(--fg);
+  background: var(--bg);
+  white-space: nowrap;
+}
+thead th:first-child { text-align: left; }
+thead th.col-sub { font-size: 11px; border-bottom-width: 1px; }
+tbody td {
+  padding: 12px 20px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+tbody td:first-child { text-align: left; font-family: var(--font-body); }
+tbody tr:nth-child(even) { background: var(--table-stripe); }
+tbody tr.highlight td {
+  background: var(--accent-dim);
+  font-weight: 700;
+}
+section.dark thead th {
+  color: var(--fg-dark);
+  background: var(--bg-dark);
+  border-bottom-color: var(--border-dark);
+}
+section.dark tbody td { border-bottom-color: var(--border-dark); }
+section.dark tbody tr:nth-child(even) { background: var(--table-stripe-dark); }
+section.dark tbody tr.highlight td { background: rgba(28,105,212,0.18); }
+
+/* ── Efficiency Big Number ── */
+.eff-stat {
+  text-align: center;
+  padding: 60px 20px;
+}
+.eff-stat__nb {
+  font-family: var(--font-display);
+  font-size: clamp(80px, 14vw, 160px);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  display: block;
+}
+.eff-stat__nb .unit {
+  font-size: 0.45em;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  vertical-align: super;
+}
+.eff-stat__label {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 20px;
+}
+section.dark .eff-stat__label { color: var(--muted-dark); }
+
+/* ── Architecture Image ── */
+.arch-frame {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-dark);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.arch-frame img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Footer ── */
+.footer {
+  background: var(--bg-dark);
+  color: var(--fg-dark);
+  padding: 80px 0 60px;
+}
+.footer .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+.footer__info p {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted-dark);
+  margin-bottom: 6px;
+}
+.footer__info strong {
+  color: var(--fg-dark);
+  font-weight: 600;
+}
+.footer__badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 8px 16px;
+}
+
+/* ── Apple-Style Scroll Reveal ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.25, 0.1, 0.25, 1),
+              transform 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── Sticky label ── */
+.sticky-label {
+  position: sticky;
+  top: 120px;
+  align-self: flex-start;
+}
+.sticky-label .p--caption {
+  margin-bottom: 8px;
+}
+
+/* ── Nav dots ── */
+.nav-dots {
+  position: fixed;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+  background: var(--border);
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+}
+.nav-dot:hover { transform: scale(1.4); }
+.nav-dot.active { background: var(--accent); }
+section.dark .nav-dot { background: var(--border-dark); }
+section.dark .nav-dot.active { background: var(--accent); }
+
+/* ── Lang Toggle ── */
+.lang-toggle {
+  position: fixed;
+  top: 32px;
+  right: 72px;
+  z-index: 300;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: rgba(128,128,128,0.06);
+  border: 1px solid var(--border);
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.lang-toggle:hover {
+  background: rgba(128,128,128,0.14);
+  border-color: var(--muted);
+}
+.lang-toggle.on-dark {
+  color: var(--fg-dark);
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.2);
+}
+.lang-toggle.on-dark:hover {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.4);
+}
+
+/* ── Divider ── */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border);
+  margin: 0;
+}
+section.dark .divider { background: var(--border-dark); }
+
+/* ── Responsive fallback ── */
+@media (max-width: 1280px) {
+  .container { padding: 0 40px; }
+  .grid-2 { gap: 48px; }
+  .grid-3 { gap: 32px; }
+  section { padding: 80px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Progress Bar ── -->
+<div class="accent-bar" id="progressBar"></div>
+
+<!-- ── Lang Toggle ── -->
+<button class="lang-toggle on-dark" id="langToggle" aria-label="Switch language">中文</button>
+
+<!-- ── Nav Dots ── -->
+<nav class="nav-dots" id="navDots" aria-label="Section navigation"></nav>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 1 — HERO
+     ═══════════════════════════════════════════ -->
+<section class="hero" id="s-hero" data-nav-key="hero">
+  <div class="hero__bg">
+    <div class="hero__bg-pattern"></div>
+    <div class="hero__grid"></div>
+  </div>
+  <div class="hero__content reveal">
+    <p class="hero__kicker" data-i18n="hero.kicker">IJCNN 2026 SS32 · Accepted Paper</p>
+    <h1 class="hero__title">ProSpectNet</h1>
+    <p class="hero__subtitle" data-i18n="hero.subtitle">
+      A Prototype-Guided Spectral-Temporal Framework for Efficient Traffic Forecasting
+    </p>
+    <p class="hero__venue" data-i18n="hero.venue">
+      <span class="accent-diamond">◆</span>Special Session 32 · Deep Neural Networks and Generative AI for Multi-Agent Smart Vehicle Perceptron, Learning, Automation and Optimization
+    </p>
+    <p class="hero__meta">
+      Ziang Ma &amp; Wenhao Zhang · Civil Aviation University of China
+    </p>
+    <div class="hero__actions">
+      <a class="hero__gh-btn" href="https://github.com/horsedirty/ProSpectNet" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span data-i18n="hero.gh">View Code on GitHub</span>
+      </a>
+    </div>
+  </div>
+  <div class="hero__scroll-hint">
+    <span data-i18n="hero.scroll">Scroll</span>
+    <div class="hero__scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 2 — THE DILEMMA
+     ═══════════════════════════════════════════ -->
+<section class="light" id="s-dilemma" data-nav-key="dilemma">
+  <div class="container">
+    <div class="grid-2-3-1 reveal">
+      <div>
+        <p class="p--caption" data-i18n="dilemma.caption">The Core Tension</p>
+        <h2 class="h--section" style="max-width:680px;" data-i18n="dilemma.heading">
+          Accuracy and efficiency have been at war in traffic forecasting.
+        </h2>
+      </div>
+      <div></div>
+    </div>
+
+    <div class="divider" style="margin-top:64px;"></div>
+
+    <div class="stat-row reveal reveal-delay-2">
+      <div class="stat-item">
+        <span class="mono">O(N²)</span>
+        <p class="stat-label" data-i18n="dilemma.s1.label">Transformer <span class="hi">Complexity</span></p>
+      </div>
+      <div class="stat-item">
+        <span class="mono">14×</span>
+        <p class="stat-label" data-i18n="dilemma.s2.label">Inference <span class="hi">Speed Gap</span></p>
+      </div>
+      <div class="stat-item">
+        <span class="mono">88%</span>
+        <p class="stat-label" data-i18n="dilemma.s3.label">Memory <span class="hi">Overhead</span></p>
+      </div>
+    </div>
+
+    <div class="grid-2 reveal reveal-delay-3" style="margin-top:80px;">
+      <div>
+        <p class="h--sub" style="margin-bottom:24px;" data-i18n="dilemma.sub1">High-performance models demand quadratic attention.</p>
+        <p class="p--body" style="max-width:440px;" data-i18n="dilemma.body1">
+          Transformers like STAEformer and GMAN achieve superior accuracy through dense
+          spatio-temporal attention — at the cost of O(N²) complexity. This quadratic bottleneck
+          makes them impractical for large-scale, real-time deployment on city-wide networks.
+        </p>
+      </div>
+      <div>
+        <p class="h--sub" style="margin-bottom:24px;" data-i18n="dilemma.sub2">Lightweight models lose the signal.</p>
+        <p class="p--body" style="max-width:440px;" data-i18n="dilemma.body2">
+          Efficient alternatives rely on statistical pooling — averaging away high-frequency
+          details and global spatial context. They trade away the very information that makes
+          long-range forecasting accurate.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 3 — PROSPECTNET APPROACH
+     ═══════════════════════════════════════════ -->
+<section class="dark" id="s-approach" data-nav-key="approach">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:80px;">
+      <p class="p--caption" data-i18n="approach.caption">ProSpectNet</p>
+      <h2 class="h--section" style="max-width:860px;" data-i18n="approach.heading">
+        Spectral decomposition meets prototype routing.
+        Linear complexity. Transformer-grade accuracy.
+      </h2>
+    </div>
+
+    <div class="grid-2 reveal reveal-delay-2">
+      <div class="card">
+        <p class="card__kicker" data-i18n="approach.card1.kicker">Innovation 1</p>
+        <h3 class="card__title" data-i18n="approach.card1.title">Multi-Frequency Decomposition</h3>
+        <p class="card__body" data-i18n="approach.card1.body">
+          MFD replaces standard pooling with explicit frequency disentanglement.
+          A gated fusion mechanism separates traffic series into trend
+          and detail components — preserving critical high-frequency signals
+          that naive pooling destroys. No frequency aliasing. No information loss.
+        </p>
+      </div>
+      <div class="card">
+        <p class="card__kicker" data-i18n="approach.card2.kicker">Innovation 2</p>
+        <h3 class="card__title" data-i18n="approach.card2.title">Latent Prototype Router</h3>
+        <p class="card__body" data-i18n="approach.card2.body">
+          LPR captures global spatial dependencies through a shared memory bank
+          of learnable prototypes — a differentiable relaxation of Soft K-Means clustering.
+          Routing complexity: O(NK) instead of O(N²). Global context without the quadratic tax.
+        </p>
+      </div>
+    </div>
+
+    <div style="margin-top:64px;" class="reveal reveal-delay-3">
+      <p class="p--caption" style="margin-bottom:16px;" data-i18n="approach.formula.caption">Key formula · Latent Prototype Router</p>
+      <p style="font-family:var(--font-mono);font-size:18px;color:var(--muted-dark);line-height:1.6;">
+        A<sub>global</sub> = softmax( Q · P<sup>T</sup> / √d ) &nbsp;&nbsp;→&nbsp;&nbsp; H<sub>global</sub> = A<sub>global</sub> · P
+      </p>
+      <p class="p--caption" style="margin-top:8px;" data-i18n="approach.formula.note">N-to-K attention · K prototypes · linear O(NK) complexity</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 4 — ARCHITECTURE
+     ═══════════════════════════════════════════ -->
+<section class="light" id="s-architecture" data-nav-key="architecture">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:56px;">
+      <p class="p--caption" data-i18n="arch.caption">Model Architecture</p>
+      <h2 class="h--section" data-i18n="arch.heading">
+        Temporal Model + Spatial Model. Decoupled. Composable.
+      </h2>
+    </div>
+
+    <div class="arch-frame reveal reveal-delay-2">
+      <img src="mosache5-ProSpectNet.png" data-i18n="arch.alt" alt="ProSpectNet Architecture — Temporal Aggregation Pooling, Multi-Frequency Decomposition, Latent Prototype Router, GLU">
+    </div>
+
+    <div class="grid-3 reveal reveal-delay-3" style="margin-top:48px;">
+      <div>
+        <p class="card__kicker" data-i18n="arch.col1.kicker">Temporal</p>
+        <p class="p--body" style="max-width:300px;" data-i18n="arch.col1.body">
+          Temporal Aggregation Pooling aggregates multi-scale features. MFD decomposes the
+          signal into trend and detail via gated fusion, feeding clean temporal embeddings
+          into the spatial model.
+        </p>
+      </div>
+      <div>
+        <p class="card__kicker" data-i18n="arch.col2.kicker">Spatial</p>
+        <p class="p--body" style="max-width:300px;" data-i18n="arch.col2.body">
+          Local Adaptive GCN captures neighborhood topology. LPR routes information through
+          K learnable prototypes for global semantic context — O(NK) instead of O(N²).
+        </p>
+      </div>
+      <div>
+        <p class="card__kicker" data-i18n="arch.col3.kicker">Gating</p>
+        <p class="p--body" style="max-width:300px;" data-i18n="arch.col3.body">
+          Gated Linear Unit (GLU) modulates feature flow with sigmoid-activated gating.
+          Add &amp; Norm residual connections stabilize training throughout the stack.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 5 — PERFORMANCE TABLE I
+     ═══════════════════════════════════════════ -->
+<section class="light" id="s-performance" data-nav-key="performance">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:56px;">
+      <p class="p--caption" data-i18n="perf.caption">Experimental Results</p>
+      <h2 class="h--section" style="max-width:900px;" data-i18n="perf.heading">
+        State-of-the-art across four real-world datasets. Average over 12 horizons.
+      </h2>
+    </div>
+
+    <div class="table-wrap reveal reveal-delay-2">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="perf.th.model">Model</th>
+            <th class="col-sub" colspan="3">PEMS03</th>
+            <th class="col-sub" colspan="3">PEMS04</th>
+            <th class="col-sub" colspan="3">PEMS07</th>
+            <th class="col-sub" colspan="3">PEMS08</th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>MAE</th><th>RMSE</th><th>MAPE</th>
+            <th>MAE</th><th>RMSE</th><th>MAPE</th>
+            <th>MAE</th><th>RMSE</th><th>MAPE</th>
+            <th>MAE</th><th>RMSE</th><th>MAPE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>STGCN</td><td>17.55</td><td>30.42</td><td>17.34%</td><td>21.16</td><td>34.89</td><td>13.83%</td><td>21.89</td><td>35.38</td><td>9.28%</td><td>17.50</td><td>27.09</td><td>11.29%</td></tr>
+          <tr><td>DCRNN</td><td>17.99</td><td>30.31</td><td>18.34%</td><td>21.22</td><td>33.44</td><td>14.17%</td><td>23.34</td><td>36.55</td><td>10.45%</td><td>16.82</td><td>26.24</td><td>10.92%</td></tr>
+          <tr><td>AGCRN</td><td>15.98</td><td>28.25</td><td>15.23%</td><td>19.83</td><td>32.26</td><td>12.97%</td><td>21.05</td><td>34.83</td><td>9.35%</td><td>15.95</td><td>25.22</td><td>10.09%</td></tr>
+          <tr><td>PDFormer</td><td>14.78</td><td>25.35</td><td>14.88%</td><td>18.67</td><td>30.63</td><td>12.01%</td><td>19.83</td><td>32.87</td><td>8.52%</td><td>14.65</td><td>23.71</td><td>9.53%</td></tr>
+          <tr><td>STAEformer</td><td>14.15</td><td>24.28</td><td>14.05%</td><td>18.10</td><td>29.83</td><td>11.51%</td><td>19.33</td><td>32.96</td><td>8.42%</td><td>13.46</td><td>22.43</td><td>8.95%</td></tr>
+          <tr><td>TimeMixer</td><td>14.62</td><td>25.10</td><td>14.95%</td><td>18.55</td><td>30.42</td><td>12.05%</td><td>20.10</td><td>33.50</td><td>8.65%</td><td>14.25</td><td>23.88</td><td>9.62%</td></tr>
+          <tr><td>STG-Mamba</td><td>14.28</td><td>24.55</td><td>14.20%</td><td>18.05</td><td>29.70</td><td>11.60%</td><td>19.25</td><td>32.80</td><td>8.35%</td><td>13.62</td><td>22.75</td><td>9.05%</td></tr>
+          <tr class="highlight"><td>ProSpectNet</td><td>14.76</td><td>23.91</td><td>15.32%</td><td>17.92</td><td>29.43</td><td>12.35%</td><td>18.87</td><td>31.93</td><td>8.10%</td><td>13.50</td><td>22.54</td><td>9.38%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 6 — EFFICIENCY
+     ═══════════════════════════════════════════ -->
+<section class="dark" id="s-efficiency" data-nav-key="efficiency">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:64px;">
+      <p class="p--caption" data-i18n="eff.caption">The Efficiency Payoff</p>
+      <h2 class="h--section" style="max-width:860px;" data-i18n="eff.heading">
+        Transformer accuracy without the Transformer bill.
+      </h2>
+    </div>
+
+    <div class="grid-2 reveal reveal-delay-2">
+      <div class="eff-stat">
+        <span class="eff-stat__nb">14<span class="unit">×</span></span>
+        <p class="eff-stat__label" data-i18n="eff.label1">Faster inference than STAEformer</p>
+      </div>
+      <div class="eff-stat">
+        <span class="eff-stat__nb">88<span class="unit">%</span></span>
+        <p class="eff-stat__label" data-i18n="eff.label2">Less memory footprint</p>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-3" style="margin-top:64px;">
+      <p class="p--body" style="max-width:760px;margin:0 auto;text-align:center;color:var(--muted-dark);" data-i18n="eff.body">
+        ProSpectNet sits on the Pareto frontier — matching the accuracy of
+        heavyweight Transformers (&lt;0.3% MAPE gap vs. STAEformer on PEMS08)
+        while delivering 14× lower inference latency and 88% memory savings.
+        Real-time, city-scale deployment is now feasible.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 7 — LONG-TERM TABLE II
+     ═══════════════════════════════════════════ -->
+<section class="dark" id="s-longterm" data-nav-key="longterm">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:56px;">
+      <p class="p--caption" data-i18n="long.caption">Horizon 60 · 5-Hour Forecast</p>
+      <h2 class="h--section" style="max-width:860px;" data-i18n="long.heading">
+        The gap widens with horizon. ProSpectNet pulls decisively ahead.
+      </h2>
+    </div>
+
+    <div class="table-wrap reveal reveal-delay-2">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="long.th.model">Model</th>
+            <th class="col-sub" colspan="3">PEMS04</th>
+            <th class="col-sub" colspan="3">PEMS08</th>
+          </tr>
+          <tr>
+            <th></th>
+            <th>MAE</th><th>RMSE</th><th>MAPE</th>
+            <th>MAE</th><th>RMSE</th><th>MAPE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>STGCN</td><td>26.43</td><td>40.80</td><td>19.45%</td><td>24.88</td><td>37.88</td><td>17.19%</td></tr>
+          <tr><td>DCRNN</td><td>25.39</td><td>39.92</td><td>18.10%</td><td>23.12</td><td>35.22</td><td>16.35%</td></tr>
+          <tr><td>AGCRN</td><td>25.72</td><td>41.42</td><td>17.66%</td><td>24.73</td><td>38.79</td><td>17.15%</td></tr>
+          <tr><td>PDFormer</td><td>23.64</td><td>37.73</td><td>15.91%</td><td>19.52</td><td>31.40</td><td>14.12%</td></tr>
+          <tr><td>STAEformer</td><td>24.47</td><td>39.47</td><td>15.58%</td><td>18.82</td><td>30.76</td><td>13.83%</td></tr>
+          <tr><td>TimeMixer</td><td>22.10</td><td>36.50</td><td>15.20%</td><td>18.90</td><td>30.50</td><td>13.95%</td></tr>
+          <tr><td>STG-Mamba</td><td>21.05</td><td>34.20</td><td>14.60%</td><td>16.85</td><td>27.90</td><td>12.10%</td></tr>
+          <tr class="highlight"><td>ProSpectNet</td><td>20.44</td><td>33.67</td><td>14.30%</td><td>16.12</td><td>26.86</td><td>11.33%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     SECTION 8 — ABLATION TABLE III
+     ═══════════════════════════════════════════ -->
+<section class="light" id="s-ablation" data-nav-key="ablation">
+  <div class="container">
+    <div class="reveal" style="margin-bottom:56px;">
+      <p class="p--caption" data-i18n="abl.caption">Ablation Study</p>
+      <h2 class="h--section" style="max-width:860px;" data-i18n="abl.heading">
+        MFD and LPR each contribute. Together they compound.
+      </h2>
+    </div>
+
+    <div class="table-wrap reveal reveal-delay-2">
+      <table>
+        <thead>
+          <tr>
+            <th data-i18n="abl.th.dataset">Dataset</th>
+            <th data-i18n="abl.th.variant">Variant</th>
+            <th>MAE</th>
+            <th>RMSE</th>
+            <th>MAPE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight"><td>PEMS03</td><td data-i18n="abl.full">ProSpectNet (Full)</td><td>14.49</td><td>23.48</td><td>15.23%</td></tr>
+          <tr><td>PEMS03</td><td data-i18n="abl.noMFD">w/o MFD (AvgPool)</td><td>14.59</td><td>23.70</td><td>16.13%</td></tr>
+          <tr><td>PEMS03</td><td data-i18n="abl.noLPR">w/o LPR (Local only)</td><td>14.59</td><td>23.50</td><td>16.03%</td></tr>
+          <tr class="highlight"><td>PEMS04</td><td data-i18n="abl.full">ProSpectNet (Full)</td><td>18.04</td><td>29.64</td><td>12.40%</td></tr>
+          <tr><td>PEMS04</td><td data-i18n="abl.noMFD">w/o MFD (AvgPool)</td><td>18.09</td><td>29.64</td><td>12.45%</td></tr>
+          <tr><td>PEMS04</td><td data-i18n="abl.noLPR">w/o LPR (Local only)</td><td>18.08</td><td>29.64</td><td>12.42%</td></tr>
+          <tr class="highlight"><td>PEMS08</td><td data-i18n="abl.full">ProSpectNet (Full)</td><td>13.62</td><td>23.21</td><td>9.23%</td></tr>
+          <tr><td>PEMS08</td><td data-i18n="abl.noMFD">w/o MFD (AvgPool)</td><td>13.76</td><td>22.78</td><td>9.11%</td></tr>
+          <tr><td>PEMS08</td><td data-i18n="abl.noLPR">w/o LPR (Local only)</td><td>13.74</td><td>23.05</td><td>9.23%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════ -->
+<footer class="footer" id="s-footer" data-nav-key="authors">
+  <div class="container reveal">
+    <div class="footer__info">
+      <p class="p--caption" style="color:var(--accent);margin-bottom:16px;">ProSpectNet</p>
+      <p><strong>Ziang Ma</strong> &nbsp; ziangma861@gmail.com</p>
+      <p><strong>Wenhao Zhang</strong> &nbsp; wenhaoz7064@163.com</p>
+      <p style="margin-top:8px;">College of Computer and Artificial Intelligence</p>
+      <p>Civil Aviation University of China, Tianjin</p>
+    </div>
+    <div>
+      <p class="footer__badge" data-i18n="footer.badge">Open Source on GitHub</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     SCROLL + BILINGUAL + INTERACTIONS
+     ═══════════════════════════════════════════ -->
+<script>
+(function() {
+  /* ── Translations ── */
+  var T = {
+    en: {
+      'nav.hero': 'ProSpectNet',
+      'nav.dilemma': 'Dilemma',
+      'nav.approach': 'Approach',
+      'nav.architecture': 'Architecture',
+      'nav.performance': 'Performance',
+      'nav.efficiency': 'Efficiency',
+      'nav.longterm': 'Long-term',
+      'nav.ablation': 'Ablation',
+      'nav.authors': 'Authors',
+
+      'title': 'ProSpectNet — Efficient Traffic Forecasting',
+      'hero.kicker': 'IJCNN 2026 SS32 · Accepted Paper',
+      'hero.subtitle': 'A Prototype-Guided Spectral-Temporal Framework for Efficient Traffic Forecasting',
+      'hero.venue': '<span class="accent-diamond">◆</span>Special Session 32 · Deep Neural Networks and Generative AI for Multi-Agent Smart Vehicle Perceptron, Learning, Automation and Optimization',
+      'hero.scroll': 'Scroll',
+      'hero.gh': 'View Code on GitHub',
+
+      'dilemma.caption': 'The Core Tension',
+      'dilemma.heading': 'Accuracy and efficiency have been at war in traffic forecasting.',
+      'dilemma.s1.label': 'Transformer <span class="hi">Complexity</span>',
+      'dilemma.s2.label': 'Inference <span class="hi">Speed Gap</span>',
+      'dilemma.s3.label': 'Memory <span class="hi">Overhead</span>',
+      'dilemma.sub1': 'High-performance models demand quadratic attention.',
+      'dilemma.body1': 'Transformers like STAEformer and GMAN achieve superior accuracy through dense spatio-temporal attention — at the cost of O(N²) complexity. This quadratic bottleneck makes them impractical for large-scale, real-time deployment on city-wide networks.',
+      'dilemma.sub2': 'Lightweight models lose the signal.',
+      'dilemma.body2': 'Efficient alternatives rely on statistical pooling — averaging away high-frequency details and global spatial context. They trade away the very information that makes long-range forecasting accurate.',
+
+      'approach.caption': 'ProSpectNet',
+      'approach.heading': 'Spectral decomposition meets prototype routing. Linear complexity. Transformer-grade accuracy.',
+      'approach.card1.kicker': 'Innovation 1',
+      'approach.card1.title': 'Multi-Frequency Decomposition',
+      'approach.card1.body': 'MFD replaces standard pooling with explicit frequency disentanglement. A gated fusion mechanism separates traffic series into trend and detail components — preserving critical high-frequency signals that naive pooling destroys. No frequency aliasing. No information loss.',
+      'approach.card2.kicker': 'Innovation 2',
+      'approach.card2.title': 'Latent Prototype Router',
+      'approach.card2.body': 'LPR captures global spatial dependencies through a shared memory bank of learnable prototypes — a differentiable relaxation of Soft K-Means clustering. Routing complexity: O(NK) instead of O(N²). Global context without the quadratic tax.',
+      'approach.formula.caption': 'Key formula · Latent Prototype Router',
+      'approach.formula.note': 'N-to-K attention · K prototypes · linear O(NK) complexity',
+
+      'arch.caption': 'Model Architecture',
+      'arch.heading': 'Temporal Model + Spatial Model. Decoupled. Composable.',
+      'arch.alt': 'ProSpectNet Architecture — Temporal Aggregation Pooling, Multi-Frequency Decomposition, Latent Prototype Router, GLU',
+      'arch.col1.kicker': 'Temporal',
+      'arch.col2.kicker': 'Spatial',
+      'arch.col3.kicker': 'Gating',
+      'arch.col1.body': 'Temporal Aggregation Pooling aggregates multi-scale features. MFD decomposes the signal into trend and detail via gated fusion, feeding clean temporal embeddings into the spatial model.',
+      'arch.col2.body': 'Local Adaptive GCN captures neighborhood topology. LPR routes information through K learnable prototypes for global semantic context — O(NK) instead of O(N²).',
+      'arch.col3.body': 'Gated Linear Unit (GLU) modulates feature flow with sigmoid-activated gating. Add & Norm residual connections stabilize training throughout the stack.',
+
+      'perf.caption': 'Experimental Results',
+      'perf.heading': 'State-of-the-art across four real-world datasets. Average over 12 horizons.',
+      'perf.th.model': 'Model',
+
+      'eff.caption': 'The Efficiency Payoff',
+      'eff.heading': 'Transformer accuracy without the Transformer bill.',
+      'eff.label1': 'Faster inference than STAEformer',
+      'eff.label2': 'Less memory footprint',
+      'eff.body': 'ProSpectNet sits on the Pareto frontier — matching the accuracy of heavyweight Transformers (<0.3% MAPE gap vs. STAEformer on PEMS08) while delivering 14× lower inference latency and 88% memory savings. Real-time, city-scale deployment is now feasible.',
+
+      'long.caption': 'Horizon 60 · 5-Hour Forecast',
+      'long.heading': 'The gap widens with horizon. ProSpectNet pulls decisively ahead.',
+      'long.th.model': 'Model',
+
+      'abl.caption': 'Ablation Study',
+      'abl.heading': 'MFD and LPR each contribute. Together they compound.',
+      'abl.th.dataset': 'Dataset',
+      'abl.th.variant': 'Variant',
+      'abl.full': 'ProSpectNet (Full)',
+      'abl.noMFD': 'w/o MFD (AvgPool)',
+      'abl.noLPR': 'w/o LPR (Local only)',
+
+      'footer.badge': 'Open Source on GitHub'
+    },
+    zh: {
+      'nav.hero': '封面',
+      'nav.dilemma': '核心矛盾',
+      'nav.approach': '创新方法',
+      'nav.architecture': '模型架构',
+      'nav.performance': '性能对比',
+      'nav.efficiency': '效率优势',
+      'nav.longterm': '长期预测',
+      'nav.ablation': '消融实验',
+      'nav.authors': '作者信息',
+
+      'title': 'ProSpectNet — 高效交通预测',
+      'hero.kicker': 'IJCNN 2026 SS32 · 已录用论文',
+      'hero.subtitle': '面向高效交通预测的原型引导谱–时间框架',
+      'hero.venue': '<span class="accent-diamond">◆</span>IJCNN 2026 特别分会 SS32 · 深度神经网络与生成式 AI 在多智能体智能车辆感知、学习、自动化与优化中的应用',
+      'hero.scroll': '向下滚动',
+      'hero.gh': '在 GitHub 上查看代码',
+
+      'dilemma.caption': '核心矛盾',
+      'dilemma.heading': '在交通预测领域，精度与效率的博弈从未停止。',
+      'dilemma.s1.label': 'Transformer <span class="hi">平方复杂度</span>',
+      'dilemma.s2.label': '推理 <span class="hi">速度差距</span>',
+      'dilemma.s3.label': '内存 <span class="hi">额外开销</span>',
+      'dilemma.sub1': '高性能模型需要平方级注意力。',
+      'dilemma.body1': 'STAEformer、GMAN 等 Transformer 模型通过密集时空注意力实现了卓越精度——代价是 O(N²) 复杂度。这一平方级瓶颈使它们难以在大规模城市交通网络中实时部署。',
+      'dilemma.sub2': '轻量级模型丢失了关键信号。',
+      'dilemma.body2': '高效替代方案依赖统计池化——将高频细节和全局空间上下文一并平均消除。它们牺牲的，正是支撑长程预测准确性的核心信息。',
+
+      'approach.caption': 'ProSpectNet',
+      'approach.heading': '谱分解融合原型路由。线性复杂度。Transformer 级精度。',
+      'approach.card1.kicker': '创新一',
+      'approach.card1.title': '多频分解（MFD）',
+      'approach.card1.body': 'MFD 用显式频率解耦替代标准池化。门控融合机制将交通序列分离为趋势分量和细节分量——保留朴素池化所破坏的关键高频信号。无频率混叠。无信息损失。',
+      'approach.card2.kicker': '创新二',
+      'approach.card2.title': '隐式原型路由器（LPR）',
+      'approach.card2.body': 'LPR 通过可学习原型的共享记忆库捕获全局空间依赖——Soft K-Means 聚类的可微松弛。路由复杂度：O(NK) 而非 O(N²)。全局上下文，无平方代价。',
+      'approach.formula.caption': '核心公式 · 隐式原型路由器',
+      'approach.formula.note': 'N 到 K 注意力 · K 个原型 · 线性 O(NK) 复杂度',
+
+      'arch.caption': '模型架构',
+      'arch.heading': '时序模型 + 空间模型。解耦设计。灵活组合。',
+      'arch.alt': 'ProSpectNet 架构 — 时序聚合池化、多频分解、隐式原型路由器、GLU 门控',
+      'arch.col1.kicker': '时序',
+      'arch.col2.kicker': '空间',
+      'arch.col3.kicker': '门控',
+      'arch.col1.body': '时序聚合池化（TAP）整合多尺度特征。MFD 通过门控融合将信号分解为趋势与细节，为空间模型提供干净的时序嵌入。',
+      'arch.col2.body': '局部自适应 GCN 捕获邻域拓扑。LPR 通过 K 个可学习原型路由信息，获取全局语义上下文——O(NK) 而非 O(N²)。',
+      'arch.col3.body': '门控线性单元（GLU）通过 sigmoid 激活的门控机制调节特征流。Add & Norm 残差连接在全栈中稳定训练。',
+
+      'perf.caption': '实验结果',
+      'perf.heading': '在四个真实数据集上全面达到最优。12 个预测步长取平均。',
+      'perf.th.model': '模型',
+
+      'eff.caption': '效率回报',
+      'eff.heading': 'Transformer 的精度，无 Transformer 的代价。',
+      'eff.label1': '推理速度比 STAEformer 快',
+      'eff.label2': '内存占用减少',
+      'eff.body': 'ProSpectNet 位于帕累托前沿——匹配重量级 Transformer 的精度（在 PEMS08 上与 STAEformer 的 MAPE 差距 <0.3%），同时实现 14× 推理加速与 88% 内存节省。城市级实时部署已具备可行性。',
+
+      'long.caption': '预测步长 60 · 5 小时预测',
+      'long.heading': '预测步长越大，优势越显著。ProSpectNet 持续拉开差距。',
+      'long.th.model': '模型',
+
+      'abl.caption': '消融实验',
+      'abl.heading': 'MFD 与 LPR 各自有效，组合产生复合增益。',
+      'abl.th.dataset': '数据集',
+      'abl.th.variant': '变体',
+      'abl.full': 'ProSpectNet（完整版）',
+      'abl.noMFD': '去除 MFD（平均池化）',
+      'abl.noLPR': '去除 LPR（仅局部）',
+
+      'footer.badge': 'GitHub 开源'
+    }
+  };
+
+  var currentLang = localStorage.getItem('prospectnet-lang') || 'en';
+
+  function applyLang(lang) {
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      var text = T[lang][key];
+      if (text !== undefined) {
+        if (key === 'arch.alt') {
+          el.setAttribute('alt', text);
+        } else {
+          el.innerHTML = text;
+        }
+      }
+    });
+    document.querySelectorAll('.nav-dot').forEach(function(dot) {
+      var key = dot.getAttribute('data-nav-key');
+      if (key && T[lang]['nav.' + key]) {
+        dot.title = T[lang]['nav.' + key];
+        dot.setAttribute('aria-label', T[lang]['nav.' + key]);
+      }
+    });
+    var toggle = document.getElementById('langToggle');
+    if (toggle) toggle.textContent = lang === 'zh' ? 'EN' : '中文';
+    localStorage.setItem('prospectnet-lang', lang);
+    currentLang = lang;
+  }
+
+  document.getElementById('langToggle').addEventListener('click', function() {
+    applyLang(currentLang === 'en' ? 'zh' : 'en');
+  });
+
+  applyLang(currentLang);
+
+  /* ── Progress bar ── */
+  var progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', function() {
+    var scrollTop = window.scrollY || document.documentElement.scrollTop;
+    var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    var pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  }, { passive: true });
+
+  /* ── Scroll reveal ── */
+  var revealEls = document.querySelectorAll('.reveal');
+  var observerOptions = { threshold: 0.15, rootMargin: '0px 0px -60px 0px' };
+
+  var revealObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  revealEls.forEach(function(el) { revealObserver.observe(el); });
+
+  /* ── Nav dots ── */
+  var sections = document.querySelectorAll('section, footer');
+  var navDots = document.getElementById('navDots');
+
+  sections.forEach(function(sec, i) {
+    var key = sec.getAttribute('data-nav-key') || '';
+    var dot = document.createElement('div');
+    dot.className = 'nav-dot';
+    dot.setAttribute('data-nav-key', key);
+    dot.title = T[currentLang]['nav.' + key] || key;
+    dot.setAttribute('role', 'button');
+    dot.setAttribute('aria-label', T[currentLang]['nav.' + key] || key);
+    dot.addEventListener('click', function() {
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    navDots.appendChild(dot);
+    sec.setAttribute('data-dot-index', i);
+  });
+
+  var dots = document.querySelectorAll('.nav-dot');
+
+  var navObserver = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var idx = parseInt(entry.target.getAttribute('data-dot-index'), 10);
+        dots.forEach(function(d) { d.classList.remove('active'); });
+        if (dots[idx]) dots[idx].classList.add('active');
+        var isDark = entry.target.classList.contains('dark') || entry.target.classList.contains('hero');
+        var lt = document.getElementById('langToggle');
+        if (lt) {
+          if (isDark) lt.classList.add('on-dark');
+          else lt.classList.remove('on-dark');
+        }
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(function(sec) { navObserver.observe(sec); });
+
+  /* ── Parallax on hero bg ── */
+  var heroBg = document.querySelector('.hero__bg');
+  if (heroBg) {
+    window.addEventListener('scroll', function() {
+      var scrollY = window.scrollY || document.documentElement.scrollTop;
+      heroBg.style.transform = 'translateY(' + (scrollY * 0.4) + 'px)';
+    }, { passive: true });
+  }
+
+  /* ── Trigger initial reveals above fold ── */
+  window.addEventListener('load', function() {
+    revealEls.forEach(function(el) {
+      var rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) {
+        el.classList.add('visible');
+        revealObserver.unobserve(el);
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

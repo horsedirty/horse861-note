@@ -8,7 +8,7 @@ import { XI_CHAPTERS } from './constants_xi';
 import { INTERNET_DEV_BASE_CHAPTERS } from './InternetDevBase';
 import { OS_CHAPTERS } from './constants_os';
 
-type View = 'home' | 'robotics' | 'maozhongte' | 'xi' | 'internetdev' | 'os';
+type View = 'home' | 'robotics' | 'maozhongte' | 'xi' | 'internetdev' | 'os' | 'prospectnet';
 
 function App() {
   const [currentView, setCurrentView] = useState<View>('home');
@@ -70,6 +70,25 @@ function App() {
         onBack={() => setCurrentView('home')}
         themeColor="text-purple-500"
       />
+    );
+  }
+
+  if (currentView === 'prospectnet') {
+    return (
+      <div className="fixed inset-0 z-50 bg-black">
+        <button 
+          onClick={() => setCurrentView('home')}
+          className="absolute top-4 left-4 z-10 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-all flex items-center gap-2"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back
+        </button>
+        <iframe 
+          src="/prospectnet-ijcnn.html" 
+          className="w-full h-full border-0"
+          title="ProSpectNet IJCNN 2026"
+        />
+      </div>
     );
   }
 
